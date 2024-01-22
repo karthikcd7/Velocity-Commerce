@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Algorithms</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
+    
+    
+  </head>
+  <!-- {% set call = "instantVisualize(" ~source~ ",'green'); instantVisualize(" ~cells_to_color~ ",'red');" %} -->
+  {% set call = "startPath(" ~source~","~cells_to_color~","~bfs~");" %}
+  <body onload="{{ call }}">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top ">
+      <a class="navbar-brand" href="#">Algorithms CS 5800 Project</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+    </nav>
+
+    <div class="container-fluid pt-5 mt-3" >
+        <div class="row">
+          <div class="col-md-9">
+            <!-- Main content area -->
+            <table id="table"></table>
+
+          </div>
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-header">
+                Panel 
+              </div>
+              <div class="card-body">
+                
+                <form action="" method="post">
+                  <label for="source">Source Cell Number:</label>
+                  <input type="text" placeholder="Enter Cell Number" name="source" id="source" value={{ defaultData['source'] }}>
+                  <label for="input">Item to Find:</label>
+                  <input type="text" placeholder="Enter item to find" name="input" id="input" value={{ defaultData['input'] }}>
+                  <input type="submit" value="Find" onclick="setSource()">
+                </form>
+                Instructions: 
+                <ul>
+                  <li>Step 1: Mark your location on the map.</li>
+                  <li>Step 2: Enter the item to find in the above input field.</li>
+                  <li>Step 3: Click Find.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <script>
+
+      async function startPath(source, cells_to_color, bfs){
+        instantVisualize(source,'green');
+        console.log(bfs);
+        visualizeBFS(cells_to_color, bfs,'cyan');
+        // await timer(5000);
+        // instantVisualize(cells_to_color,'red');
+      }
+
+      async function instantVisualize(cells_to_color, color){
+        for (var i = 0; i < cells_to_color.length; i++) {
+          var row = cells_to_color[i][0];
+          var col = cells_to_color[i][1];
+          var cell = document.getElementById("cell-" + row + "-" + col);
+          cell.style.backgroundColor = color;
+          console.log("cell-" + row + "-" + col)
+          await timer(1000);
+        }
+      }
+      async function visualizeBFS(cells_to_color, bfs, color){
+        for (var i = 0; i < bfs.length; i++) {
+          var col = bfs[i][0];
+          var row = bfs[i][1];
+          var cell = document.getElementById("cell-" + row + "-" + col);
+          if(cell){
+          cell.style.backgroundColor = color;
+          // console.log("cell-" + row + "-" + col)
+          await timer(5);
+          }
+        }
+        instantVisualize(cells_to_color,'red');
+      }
+      function timer(ms) { return new Promise(res => setTimeout(res, ms)); }
+    </script>
+
+<br>
+
+<div style="padding: 20px; width:95%;">
+<h4>Server Information: </h4>  
+
+<div class="tab">
+    <button class="tablinks" onclick="openServer(event, 'server0')" id="defaultOpen">Server 0</button>
+    <button class="tablinks" onclick="openServer(event, 'server1')">Server 1</button>
+    <button class="tablinks" onclick="openServer(event, 'server2')">Server 2</button>
+    <button class="tablinks" onclick="openServer(event, 'server3')">Server 3</button>
+    <button class="tablinks" onclick="openServer(event, 'server4')">Server 4</button>
+    <button class="tablinks" onclick="openServer(event, 'server5')">Server 5</button>
+    <button class="tablinks" onclick="openServer(event, 'server6')">Server 6</button>
+    <button class="tablinks" onclick="openServer(event, 'server7')">Server 7</button>
+    <button class="tablinks" onclick="openServer(event, 'server8')">Server 8</button>
+
+</div>
+{% for k, server in serverMap.items() %}
+    {% set tag = "server"~(loop.index-1) %}
+  <div id="{{ tag }}" class="tabcontent">
+    <h2>Server {{loop.index-1}}</h2>
+    Storage Data: {{server.storage}}
+    {% set my_keys = server.cache.cache.keys() | list %}
+    <br>
+    Cache: {{ my_keys }}
+    <br>
+    Look-up Table:
+    <table>
+      <tr>
+        <th>Data</th>
+        {% for key, value in server.lookup.items() %}
+        <td style="padding-left: 5px; padding-right: 5px;"> {{ key }} </td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>Location</th>
+        {% for key, value in server.lookup.items() %}
+        <td> {{ value }} </td>
+        {% endfor %}
+      </tr>
+    </table>
+    <br>
+  </div>
+{% endfor %}
+
+
+
+
+<script>
+document.getElementById("defaultOpen").click();
+ function openServer(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+
+    <script src="../static/js/index.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
+</html>
